@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+
+
+{% block title %}Hello CalculPointFedelityController!{% endblock %}
+
+{% block body %}
+<style>
+    
+</style>
+
+<div class="example-wrapper">
+    <h1>Hello {{ controller_name }}! ✅</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>FidelityPoint</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for customer in customers %}
+            <tr>
+                <td>{{ customer.id }}</td>
+
+                <td>{{ customer.lastName }}</td>
+
+                <td>{{ customer.fidelityPoint }}</td>
+
+                <td><a href="{{ path('test', {'id': customer.id }) }}">Edit</a></td> 
+
+                <td>
+                {# {{ include('calcul_point_fedelity/test.html.twig', {'button_label': '+'}) }} #}
+                </td>
+                 
+                
+
+            
+
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="12">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+
+{% endblock %}

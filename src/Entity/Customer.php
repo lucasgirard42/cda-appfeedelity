@@ -72,6 +72,11 @@ class Customer
      */
     private $service;
 
+    public function __construct()
+    {
+        $this->fidelityPoint = 0 ;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -208,4 +213,11 @@ class Customer
 
         return $this;
     }
+
+    public  function __toString()
+    {
+        return $this->getEmail();
+    }
+
+    
 }

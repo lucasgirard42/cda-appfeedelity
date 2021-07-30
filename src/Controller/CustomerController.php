@@ -26,12 +26,12 @@ class CustomerController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        if (!($user instanceof UserInterface)){
+        if (!($user instanceof UserInterface)) {
             return $this->redirectToRoute('app_login');
         }
 
         $customer = $user->getCustomers();
-        if (!isset($customer)){
+        if (!isset($customer)) {
             $customer = new Customer();
             return $this->redirectToRoute('customer_new');
         }
@@ -39,11 +39,9 @@ class CustomerController extends AbstractController
         return $this->render('customer/index.html.twig', [
             'customers' => $customer,
         ]);
-        
-        
     }
 
-    
+
 
 
     /**
@@ -51,25 +49,27 @@ class CustomerController extends AbstractController
      */
     public function new(Request $request): Response
     {
-        $user = $this-> getUser();
+        $user = $this->getUser();
 
         // Redirect users who already have a customer to edit form
-        if ($user->getCustomers() instanceof Customer){
+        if ($user->getCustomers() instanceof Customer) {
             $customerId = $user->getCustomers()->getId();           /////////////// -------------------  ////////////
-            return $this->redirectToRoute('customer_edit',[
-                'id'=> $customerId,
-                'fidelity_point' => 0,
+            return $this->redirectToRoute('customer_edit', [
+                'id' => $customerId,
+
             ]);
         }
 
+
         $customer = new Customer();
+
 
         $form = $this->createForm(CustomerType::class, $customer);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
-            
+
             $customer->setUser($user);                                  ////// <------------- //////
 
             $entityManager->persist($customer);
@@ -87,17 +87,17 @@ class CustomerController extends AbstractController
     /**
      * @Route("/", name="customer_show_user", methods={"GET"})
      */
-    public function showUser(): Response 
+    public function showUser(): Response
     {
         /** @var User $user */
         $user = $this->getUser();
 
-        if (!($user instanceof UserInterface)){
+        if (!($user instanceof UserInterface)) {
             return $this->redirectToRoute('app_login');
         }
 
         $customer = $user->getCustomers();
-        if (!isset($customer)){
+        if (!isset($customer)) {
             $customer = new Customer();
             return $this->redirectToRoute('customer_new');
         }
@@ -107,7 +107,7 @@ class CustomerController extends AbstractController
         ]);
     }
 
-    
+
     /**
      * @Route("/{id}", name="customer_show", methods={"GET"})
      */
@@ -123,13 +123,28 @@ class CustomerController extends AbstractController
      */
     public function edit(Request $request, Customer $customer): Response
     {
+        
         $form = $this->createForm(CustomerType::class, $customer);
         $form->handleRequest($request);
-
+        
+        
+        
+        
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+           
+            
+           $initialFelityPoint = $customer -> getFidelityPoint(0);
+           $addFedelityPoint = $initialFelityPoint+1;                   // ajout automatique des point de fedelité sur la route Edit à réctifier 
+           $customer->setFidelityPoint($addFedelityPoint);
+          
+            
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($customer);
+            $entityManager->flush();
+
 
             return $this->redirectToRoute('customer_index');
+
         }
 
         return $this->render('customer/edit.html.twig', [
@@ -143,7 +158,7 @@ class CustomerController extends AbstractController
      */
     public function delete(Request $request, Customer $customer): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$customer->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $customer->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($customer);
             $entityManager->flush();

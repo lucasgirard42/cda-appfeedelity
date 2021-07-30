@@ -6,6 +6,7 @@ use App\Entity\Customer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 
 class CustomerType extends AbstractType
 {
@@ -20,7 +21,13 @@ class CustomerType extends AbstractType
             ->add('society')
             ->add('image')
             ->add('city')
-            // ->add('fidelityPoint')
+            ->add('fidelityPoint', IntegerType::class,[
+                'attr' => [
+                    // 'value' => 0,
+                    'min' => 0,
+                    // 'max' => 10,
+                ]
+            ])
             ->add('service')
             // ->add('user')
         ;

@@ -1,0 +1,25 @@
+{# {% extends 'base.html.twig' %} #}
+
+
+{% block body %}
+  {# <h1>
+    Hello {{ customer.lastName }}
+  </h1> #}
+
+  <p>
+   {{ customer.fidelityPoint }} 
+    {{ form_start(form) }} 
+     {{ form_row(form.fidelityPoint) }}
+    <button class="btn">{{ button_label|default('+') }}</button>
+    {# <button type="submit">crée</button> #}
+    {{ form_end(form) }}
+  </p>
+  
+ 
+
+ 
+ 
+    
+   
+  
+{% endblock %}
