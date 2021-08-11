@@ -13,6 +13,8 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 /**
  * @Route("/customer")
@@ -43,13 +45,33 @@ class CustomerController extends AbstractController
         ]);
     }
 
+    /**
+     * 
+     */
+    private function saveUploadFile(UploadedFile $file, string $directory, SluggerInterface $slugger)
+    {
+        $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+               
+        $safeFilename = $slugger->slug($originalFilename);
+        $newFilename = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
 
+        try {
+            $file->move(
+                $directory,
+                $newFilename
+            );
+        } catch (FileException $e) {
+            $newFilename = 'error file upload';
+        }
+
+        return $newFilename;
+    }
 
 
     /**
      * @Route("/new", name="customer_new", methods={"GET","POST"})
      */
-    public function new(Request $request): Response
+    public function new(Request $request, SluggerInterface $slugger ): Response
     {
         $user = $this->getUser();
 
@@ -73,6 +95,17 @@ class CustomerController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
 
             $customer->setUser($user);                                  ////// <------------- //////
+
+            /** @var UploadedFile $file  */
+            $file = $form->get('image')->getData();
+            if ($file){
+                $newFilename = $this->saveUploadFile(
+                    $file,
+                    $this->getParameter('pictures_directory'),
+                    $slugger
+                );
+                $customer->setImage($newFilename);
+            }
 
             $entityManager->persist($customer);
             $entityManager->flush();

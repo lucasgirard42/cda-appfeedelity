@@ -38,6 +38,8 @@
             <tr>
                 <th>Image</th>
                 <td>{{ customer.image }}</td>
+                <td><a href="{{ asset('uploads/' ~ customer.image) }}">your picture</a><td>
+                <Image src="{{ asset('uploads/' ~ customer.image) }}" />
             </tr>
             <tr>
                 <th>City</th>
