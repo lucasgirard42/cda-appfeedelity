@@ -11,6 +11,7 @@ use App\Form\CustomerType;
 use App\Repository\CustomerRepository;
 use Doctrine\ORM\Repository\RepositoryFactory;
 use PhpParser\Node\Param;
+use Symfony\Component\Cache\Adapter\ParameterNormalizer;
 use Symfony\Component\Console\Style\StyleInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -19,16 +20,17 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 
+
+
 class CalculPointFedelityController extends AbstractController
 {
     /**
-     * @Route("/calcul/point/fedelity", name="calcul_point_fedelity")
+     * @Route("/calcul/point/fedelity", name="calcul_point_fedelity",  methods={"GET","POST"})
      */
     public function index(): Response
     {
         /** @var User $user */
         $user = $this->getUser();
-
         if (!($user instanceof UserInterface)) {
             return $this->redirectToRoute('app_login');
         }
@@ -37,51 +39,19 @@ class CalculPointFedelityController extends AbstractController
             $customer = new Customer();
             return $this->redirectToRoute('customer_new');
         }
-
         return $this->render('calcul_point_fedelity/index.html.twig', [
             'controller_name' => 'CalculPointFedelityController',
-            'customers' => $customer,
+             'customers' => $customer,
         ]);
         
     }
-
- 
-    // /**
-    //  * 
-    //  */
-    // public function addPointFedelity(Request $request, Customer $customer): Response
-    // {
-        
-    //     $form = $this->createForm(CustomerType::class, $customer);
-    //     $form->handleRequest($request);
-
-    //     if ($form->isSubmitted() && $form->isValid()){
-
-    //         $initialFelityPoint = $customer -> getFidelityPoint(0);
-    //         $addFedelityPoint = $initialFelityPoint+1;                   // ajout automatique des point de fedelité sur la route Edit à réctifier 
-    //         $customer->setFidelityPoint($addFedelityPoint);
-
-            
-
-    //         $entityManager = $this->getDoctrine()->getManager();
-    //         $entityManager->persist($customer);
-    //         $entityManager->flush();
-    //         return $this->redirectToRoute('customer_index');
-    //     }
-
-    //     return $this->render('calcul_point_fedelity/index.html.twig', [
-    //         'customer' => $customer,
-    //         'form' => $form->createView(),
-    //     ]);        
-    // }
-
     
 
     /**
-     * @Route("/test/{id}", name="test", methods={"GET","POST"})
+     * @Route("/addPoint/{id}", name="addPoint", methods={"GET","POST"})
      */
 
-     public function test(Request $request,Customer $customer, MailerInterface $mailer): Response
+     public function addPoint(Customer $customer, MailerInterface $mailer): Response
      {
          /** @var User $user */
         $user = $this->getUser();
@@ -95,10 +65,6 @@ class CalculPointFedelityController extends AbstractController
         $mailUser = $user->getEmail(); 
         $mailCustomer = $customer -> getEmail();
 
-        
-        
-        
-
         $email = (new Email())
         ->from($mailUser)
         ->to($mailCustomer)
@@ -111,11 +77,10 @@ class CalculPointFedelityController extends AbstractController
         ->html('<p>félicitation vous avez recu 10 point de fidélité, vous avez le droit un une réduction 
                 de 10% pour votre prochaine séance</p>');
 
-        
-        $form = $this->createForm(CustomerType::class, $customer);
-        $form->handleRequest($request);
+        // $form = $this->createForm(CustomerType::class, $customer);
+        // $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()){
+        // if ($form->isSubmitted() && $form->isValid()){
  
                 // if ($point <= 9 ) {
                    
@@ -134,21 +99,12 @@ class CalculPointFedelityController extends AbstractController
                    $customer->setFidelityPoint($addFedelityPoint);
                        break;
                }
-                    
-                    
 
                     $entityManager = $this->getDoctrine()->getManager();
                     $entityManager->persist($customer);
                     $entityManager->flush();
-                    return $this->redirectToRoute('calcul_point_fedelity');
-                }
-                
-        return $this->render('calcul_point_fedelity/test.html.twig', [
-            'customer' => $customer ,
-            
-            'form' => $form->createView(),
-            
-        ]);
+                     return $this->redirectToRoute('calcul_point_fedelity');
+
      }
 
      /**

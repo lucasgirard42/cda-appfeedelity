@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 
 /**
  * @Route("/customer")
@@ -131,13 +133,6 @@ class CustomerController extends AbstractController
         
         
         if ($form->isSubmitted() && $form->isValid()) {
-           
-            
-           $initialFelityPoint = $customer -> getFidelityPoint(0);
-           $addFedelityPoint = $initialFelityPoint+1;                   // ajout automatique des point de fedelité sur la route Edit à réctifier 
-           $customer->setFidelityPoint($addFedelityPoint);
-          
-            
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($customer);
             $entityManager->flush();
@@ -165,5 +160,65 @@ class CustomerController extends AbstractController
         }
 
         return $this->redirectToRoute('customer_index');
+    }
+
+    /**
+     * @Route("/addPoint/{id}", name="addPoint", methods={"GET","POST"})
+     */
+
+    public function addPoint(Customer $customer, MailerInterface $mailer): Response
+    {
+        /** @var User $user */
+       $user = $this->getUser();
+
+       $init = 0;
+       $initialFelityPoint = $customer -> getFidelityPoint(0);
+       $addFedelityPoint = $initialFelityPoint +=1 ;   // ajout automatique des point de fedelité sur la route Edit à réctifier 
+       
+       $point = $customer -> getFidelityPoint(0);
+       
+       $mailUser = $user->getEmail(); 
+       $mailCustomer = $customer -> getEmail();
+
+       $email = (new Email())
+       ->from($mailUser)
+       ->to($mailCustomer)
+       //->cc('cc@example.com')
+       //->bcc('bcc@example.com')
+       //->replyTo('fabien@example.com')
+       //->priority(Email::PRIORITY_HIGH)
+       ->subject('Bravo vous avez recu une reduction')
+       ->text('Sending emails is fun again!')
+       ->html('<p>félicitation vous avez recu 10 point de fidélité, vous avez le droit un une réduction 
+               de 10% pour votre prochaine séance</p>');
+
+       // $form = $this->createForm(CustomerType::class, $customer);
+       // $form->handleRequest($request);
+
+       // if ($form->isSubmitted() && $form->isValid()){
+
+               // if ($point <= 9 ) {
+                  
+               //      $customer->setFidelityPoint($addFedelityPoint);
+               // } else {
+               //     $customer->setFidelityPoint($init);
+               // }
+
+              switch ($point) {
+                   case 9:
+                       $mailer->send($email);
+                       $customer->setFidelityPoint($init);
+                       break;
+                  
+                  default:
+                  $customer->setFidelityPoint($addFedelityPoint);
+                      break;
+              }
+
+                   $entityManager = $this->getDoctrine()->getManager();
+                   $entityManager->persist($customer);
+                   $entityManager->flush();
+                    return $this->redirectToRoute('customer_index');
+
     }
 }

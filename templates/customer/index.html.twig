@@ -35,6 +35,7 @@
                 <td>{{ customer.image }}</td>
                 <td>{{ customer.city }}</td>
                 <td>{{ customer.fidelityPoint }}</td>
+                <td>{{ include('calcul_point_fedelity/buttonAddPoint.html.twig') }}</td>
                 <td>{{ customer.service }}</td>
                 <td>
                     <a href="{{ path('customer_show', {'id': customer.id}) }}">show</a>
