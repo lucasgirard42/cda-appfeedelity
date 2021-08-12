@@ -73,7 +73,8 @@ class CalculPointFedelityController extends AbstractController
         //->replyTo('fabien@example.com')
         //->priority(Email::PRIORITY_HIGH)
         ->subject('Bravo vous avez recu une reduction')
-        ->text('Sending emails is fun again!')
+        ->text('félicitation vous avez recu 10 point de fidélité, vous avez le droit un une réduction 
+        de 10% pour votre prochaine séance!')
         ->html('<p>félicitation vous avez recu 10 point de fidélité, vous avez le droit un une réduction 
                 de 10% pour votre prochaine séance</p>');
 

@@ -2,6 +2,12 @@
 ```bash
 utilisation de mailtrap avec mon mail pro, modiffication .env MAIL DNS  a modifier
 ```
+ ## MAIL
+ ```shell 
+ MailerInterface $mailer
+ ```
+
+
 
 ## upload une image dans une BDD
 ```shell
