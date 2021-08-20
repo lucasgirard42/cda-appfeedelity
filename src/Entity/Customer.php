@@ -2,34 +2,52 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\CustomerRepository;
 use Doctrine\ORM\Mapping as ORM;
 
+use Symfony\Component\Serializer\Annotation\Groups;
+
 /**
  * @ORM\Entity(repositoryClass=CustomerRepository::class)
+ * @apiResource(
+ *       
+ * )
  */
+#[ApiResource(attributes: ['normalization_context' => ['groups' => ['read']],'denormalization_context' => ['groups' => ['write']],])]
+
+
 class Customer
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"read"})
      */
+
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="customers")
+     * @Groups({"read"})
      */
+    
     private $user;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"read"})
      */
+    
     private $firstName;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"read"})
+     * 
      */
+    
     private $lastName;
 
     /**
@@ -55,6 +73,7 @@ class Customer
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
+    
     private $image;
 
     /**
@@ -65,6 +84,7 @@ class Customer
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
+    
     private $fidelityPoint;
 
     /**

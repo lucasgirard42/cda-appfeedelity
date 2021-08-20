@@ -1,14 +1,20 @@
-# MAILTRAP
+## MAILTRAP
 ```bash
 utilisation de mailtrap avec mon mail pro, modiffication .env MAIL DNS  a modifier
 ```
- ## MAIL
+## MAIL
  ```shell 
  MailerInterface $mailer
  ```
+## RESET PASWWORD 
+```shell
+ composer require symfonycasts/reset-password-bundle
+    .....
+ php bin/console make:reset-password
 
-
-
+ email reset password pro.lucas.girard@gmail.com
+ seulement les users 
+```
 ## upload une image dans une BDD
 ```shell
 #'code dans le typeform' 
@@ -78,7 +84,6 @@ utilisation de mailtrap avec mon mail pro, modiffication .env MAIL DNS  a modifi
  ```
 ## liens vers la doc de symfony
     https://symfony.com/doc/current/controller/upload_file.html#creating-an-uploader-service
-
 ## save
 ```shell
     /**
@@ -132,4 +137,45 @@ utilisation de mailtrap avec mon mail pro, modiffication .env MAIL DNS  a modifi
     } catch (FileException $e) {
         $newFilename = 'error file upload';
     }
-    ```
+```
+## Api PLatorm
+```shell
+## Commande pour installer Api PLatform 
+symfony composer req api ou  composer req api 
+
+## The Serialization Process Context, Groups and Relations.
+
+### Configuration
+
+# api/config/packages/framework.yaml
+framework:
+    serializer: { enable_annotations: true }
+
+### Using Serialization Groups
+
+# api/config/api_platform/resources.yaml
+resources:
+    App\Entity\Book:
+        attributes:
+            normalization_context:
+                groups: ['read']
+            denormalization_context:
+                groups: ['write']
+
+# api/config/serialization/Book.yaml
+App\Entity\Book:
+    attributes:
+        name:
+            groups: ['read', 'write']
+        author:
+            groups: ['write']
+            
+
+### @apiRessource()
+Dans les entity faire une annotation avec @apiRessource() et use ApiPlatform\Core\Annotation\ApiResource; pour afficher les GET,POST ect ... en format JSON
+sur la route /api.
+
+
+
+
+```

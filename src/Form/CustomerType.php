@@ -24,13 +24,13 @@ class CustomerType extends AbstractType
                 'mapped' => false 
             ])
             ->add('city')
-            ->add('fidelityPoint', IntegerType::class,[
-                'attr' => [
-                    // 'value' => 0,
-                    'min' => 0,
-                    // 'max' => 10,
-                ]
-            ])
+            // ->add('fidelityPoint', IntegerType::class,[
+            //     'attr' => [
+            //         // 'value' => 0,
+            //         'min' => 0,
+            //         // 'max' => 10,
+            //     ]
+            // ])
             ->add('service')
             // ->add('user')
         ;
