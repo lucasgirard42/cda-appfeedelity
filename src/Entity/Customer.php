@@ -18,21 +18,25 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  * @ApiResource(
  *       
  *       normalizationContext={"groups"="customer"},
+ *       denormalizationContext={"groups"="createCustomer","updateCustomer"},
  *       paginationItemsPerPage=2,
  *       collectionOperations={
  *                              "GET", 
  *                              "POST"={
  *                                      "security"="is_granted('IS_AUTHENTICATED_FULLY')",
- *                                      "controller"=App\Controller\Api\CustomerCreateController::class 
+ *                                      "controller"=App\Controller\Api\CustomerCreateController::class ,
  *                                      },
- *                              
  *                             },
  *      itemOperations={
  *                      "GET",
  *                      "PUT"={
- *                                      "security"="is_granted('EDIT_CUSTOMER', object)",
- *                                      "controller"=App\Controller\Api\CustomerCreateController::class 
- *                                    },
+ *                             "security"="is_granted('EDIT_CUSTOMER', object)",
+ *                             "controller"=App\Controller\Api\CustomerCreateController::class,
+ *                            },
+ *                      "DELETE"={
+ *                             "security"="is_granted('EDIT_CUSTOMER', object)",
+ *                             "controller"=App\Controller\Api\CustomerCreateController::class
+ *                            },
  *                      },
  *                 
  * )
@@ -61,7 +65,7 @@ class Customer
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"customer"})
+     * @Groups({"customer","createCustomer","updateCustomer"})
      */
     
     private $firstName;

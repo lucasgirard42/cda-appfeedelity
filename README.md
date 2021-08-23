@@ -266,13 +266,76 @@ class CustomerCreateController extends AbstractController
 }
 ```
 ![finaly](assets/images/app.png);
+
+## SECURITY, PUT AND DELETE
 ```shell
-7- Dans les Annotation de l\'entity customer -> @ApiResource mettre security afin que les users soit identifier:
+1- Dans les Annotation de l\'entity customer -> @ApiResource mettre security afin que les users soit identifier ou supprimer:
         itemOperations={
- *                              "GET", 
- *                              "POST"={
- *                                  "security"="is_granted('IS_AUTHENTICATED_FULLY')",        <----------- 
- *                                  "controller"=App\Controller\Api\CustomerCreateController::class 
- *                              }
- *                             },
+ *                      "GET",
+ *                      "PUT"={
+ *                             "security"="is_granted('EDIT_CUSTOMER', object)",
+ *                             "controller"=App\Controller\Api\CustomerCreateController::class 
+ *                            },
+ *                      "DELETE"={
+ *                             "security"="is_granted('EDIT_CUSTOMER', object)",
+ *                             "controller"=App\Controller\Api\CustomerCreateController::class 
+ *                            },
+ *                      },
+
+ 2- Crée un dossier voter dans Security pour que les users soit idendifier pour modifier un customer :
+    namespace App\Security\Voter;
+
+    use App\Entity\Customer;
+    use App\Entity\User;
+    use Symfony\Component\Security\Core\Authorization\Voter\Voter;
+    use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+
+    class CustomersVoter extends Voter
+    {
+        const EDIT = 'EDIT_CUSTOMER'; 
+
+        protected function supports(string $attribute, $subject)
+        {
+            return 
+                $attribute === self::EDIT && 
+                $subject instanceof Customer;
+        }
+
+        protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token)
+        {
+            $user = $token->getUser();
+
+            if (
+                !$user instanceof User ||
+                !$subject instanceof Customer
+            ) {
+                return false;
+            }
+
+            return $subject->getUser()->getId() === $user->getId();
+        }
+    }
+
+    L\'orsque qu\'un autre utilisateur ou administrateur veut modifer ( soumettre) un champs, l\'accès lui sera refusé (denied), la permision à fonctionnner.  
+
  ```
+
+## CONTRAINTE ET VERRIFICATION (hack)
+```shell
+Empecher un users de modifier les donnéee, si il y a compris la forme des objet alors on utilise l\'annotaion denormalizationContext cela va nous permetre ce qu\'autorise sur le POST et PUT :
+
+Customer entity
+
+@ApiResource(
+   denormalizationContext={"groups"="createCustomer","updateCustomer"},
+)
+
+     /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"customer","createCustomer","updateCustomer"})
+     */
+    
+    private $firstName;
+
+```
+
