@@ -2,19 +2,43 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
+
 use App\Repository\CustomerRepository;
 use Doctrine\ORM\Mapping as ORM;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+
+
 
 /**
  * @ORM\Entity(repositoryClass=CustomerRepository::class)
- * @apiResource(
+ * @ApiResource(
  *       
+ *       normalizationContext={"groups"="customer"},
+ *       paginationItemsPerPage=2,
+ *       collectionOperations={
+ *                              "GET", 
+ *                              "POST"={
+ *                                      "security"="is_granted('IS_AUTHENTICATED_FULLY')",
+ *                                      "controller"=App\Controller\Api\CustomerCreateController::class 
+ *                                      },
+ *                              
+ *                             },
+ *      itemOperations={
+ *                      "GET",
+ *                      "PUT"={
+ *                                      "security"="is_granted('EDIT_CUSTOMER', object)",
+ *                                      "controller"=App\Controller\Api\CustomerCreateController::class 
+ *                                    },
+ *                      },
+ *                 
  * )
+ * @ApiFilter( SearchFilter::class , properties={"user": "exact"})
  */
-#[ApiResource(attributes: ['normalization_context' => ['groups' => ['read']],'denormalization_context' => ['groups' => ['write']],])]
+
 
 
 class Customer
@@ -23,45 +47,46 @@ class Customer
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"read"})
+     * @Groups({"customer"})
      */
 
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="customers")
-     * @Groups({"read"})
+     * @Groups({"customer"})
      */
     
     private $user;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"read"})
+     * @Groups({"customer"})
      */
     
     private $firstName;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"read"})
-     * 
      */
     
     private $lastName;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"customer"})
      */
     private $address;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"customer"})
      */
     private $email;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     * 
      */
     private $phone;
 
@@ -72,23 +97,27 @@ class Customer
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"customer"})
      */
     
     private $image;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"customer"})
      */
     private $city;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     * @Groups({"customer"})
      */
     
     private $fidelityPoint;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"customer"})
      */
     private $service;
 
