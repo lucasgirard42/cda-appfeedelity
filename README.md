@@ -338,4 +338,28 @@ Customer entity
     private $firstName;
 
 ```
+## READ AND DESERIALIZE
+```shell
+desactiver la vue et les information de doctrine sur la route URI  /api/users/1 pour ne pas récupérer le JSON:
+Dans Entity/user.php ajouter dans @ApiResource() itemOperation("read"= false, "deserializa"=false)
 
+/**
+ * @ORM\Entity(repositoryClass=UserRepository::class)
+ * @ORM\Table(name="`user`")
+ * @ApiResource(
+ *        collectionOperations={},  
+ *        itemOperations={
+ *                        "GET"={
+ *                              "controller"=App\Controller\Api\EmptyController::class,
+ *                        "read"=false,
+ *                        "deserialize"=false,  
+ *                          }
+ *                        },
+ * )
+https://api-platform.com/docs/core/events/#built-in-event-listeners
+```
+
+## LIEN UTILE 
+
+[Grakikart](https://www.youtube.com/watch?v=Neb4GBRP7eg&t=1765s)
+[ApiPLatform](https://api-platform.com/docs)

@@ -21,7 +21,13 @@ use ApiPlatform\Core\Annotation\ApiProperty;
  * @ORM\Table(name="`user`")
  * @ApiResource(
  *        collectionOperations={},  
- *        itemOperations={"GET"},
+ *        itemOperations={
+ *                        "GET"={
+ *                              "controller"=App\Controller\Api\EmptyController::class,
+ *                        "read"=false,
+ *                        "deserialize"=false,  
+ *                          }
+ *                        },
  * )
  * @UniqueEntity(fields={"email"}, message="There is already an account with this email")
  */
