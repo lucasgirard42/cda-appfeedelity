@@ -1,0 +1,40 @@
+import { useCallback, useState } from "react"
+
+
+
+export function usePaginatedFetch (url){
+    const [loading, setloadind] = useState(false)
+    const [items, setItems ] = useState([])
+    const [count, setCount] = useState(0)
+    const [next, setNext] = useState(null)
+    
+    const load = useCallback(async () =>{
+        setloadind(true)
+        const response = await fetch(next || url, {
+            headers:{
+                'Accept': 'application/ld+json'
+            }
+        })
+        const responseData = await response.json()
+        if (response.ok){
+            setItems(items => [...items, ...responseData['hydra:member']])
+            setCount(responseData['hydra:totalItems'])
+            if (responseData['hydra:view'] && 
+            responseData['hydra:view']['hydra:next']) {
+                setNext(responseData['hydra:view']['hydra:next'])
+            } else {
+                setNext(null)
+            }
+        } else {
+            console.error(responseData)
+        }
+        setloadind(false)
+    }, [url, next])
+    return {
+        items, 
+        load,
+        loading,
+        count,
+        hasMore: next != null
+    }
+}
