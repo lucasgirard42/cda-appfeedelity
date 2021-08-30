@@ -6,9 +6,9 @@ import { Icon } from '../components/Icon';
 
 
 
-function Customers(){
+function Customers({user}){
 
-    const { items: customers, load, loading, count, hasMore} = usePaginatedFetch('/api/customers') 
+    const { items: customers, load, loading, count, hasMore} = usePaginatedFetch('/api/customers?user=' + user) 
 
     useEffect(() => {
         load()
@@ -25,18 +25,23 @@ function Customers(){
 }
 
 
-function Title ({count}){
-    // <Icon icon="customers" />
-    return <h3>{count} Customer{count>1?'s':''}</h3>
-}
+// function Title ({count}){
+//     // <Icon icon="customers" />
+//     return <h3>{count} Customer{count>1?'s':''}</h3>
+// }
 
-function Customer ({customer}){
-    return <div className="data-customers">
-        <h4 >
-            <strong>{customer.firstName}</strong>
+const Customer = React.memo(({customer}) => {
+    console.log('render');
+    return <div className="row data-customers">
+        <h4 className="col-sm-3"> 
+             <strong>{customer.firstName}</strong>
+             <strong> {customer.lastName}</strong>
         </h4>
+        <div className="col-sm-1">
+            <p>{customer.fidelityPoint}</p>
+        </div>
     </div>
-}
+})
 
 
 
@@ -44,7 +49,8 @@ function Customer ({customer}){
 class CustomerElement extends HTMLElement{
 
     connectedCallback(){
-        render(<Customers/>, this)
+        const user = parseInt(this.dataset.user, 10)
+        render(<Customers user={user}/>, this)
     }
 
     disconnectedCallback(){

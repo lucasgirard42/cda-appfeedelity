@@ -72,6 +72,7 @@ class Customer
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"customer"})
      */
     
     private $lastName;
@@ -90,12 +91,13 @@ class Customer
 
     /**
      * @ORM\Column(type="integer", nullable=true)
-     * 
+     * @Groups({"customer"})
      */
     private $phone;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"customer"})
      */
     private $society;
 
