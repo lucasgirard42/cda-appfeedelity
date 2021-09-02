@@ -8,7 +8,7 @@ import { Icon } from '../components/Icon';
 
 function Customers({user}){
 
-    const { items: customers, load, loading, count, hasMore} = usePaginatedFetch('/api/customers?user=' + user) 
+    const { items: customers, load, loading, count, hasMore} = usePaginatedFetch('/api/customers?user='+user) 
 
     useEffect(() => {
         load()
@@ -17,7 +17,7 @@ function Customers({user}){
     return <div>
         {loading && 'chargement...'}   
         {/* {JSON.stringify(customers)} */}
-        {customers.map(c => <Customer key={c.id} customer={c} />)}
+        {customers.map(c => <Customer key={c.id}  customer={c} />)}
         <Title count={count}/>
         {/* <button onClick={load}>charger les customers</button> */}
         {hasMore && <button disabled={loading} className="btn btn-primary" onClick={load}> charger plus de clients </button>}
@@ -25,14 +25,17 @@ function Customers({user}){
 }
 
 
-// function Title ({count}){
-//     // <Icon icon="customers" />
-//     return <h3>{count} Customer{count>1?'s':''}</h3>
-// }
+function Title ({count}){
+    // <Icon icon="customers" />
+    return <h3>{count} Customer{count>1?'s':''}</h3>
+}
 
-const Customer = React.memo(({customer}) => {
+const Customer = React.memo(({customer, user}) => {
     console.log('render');
     return <div className="row data-customers">
+        <div className="col-sm-1">
+            <strong>{customer.id}</strong>
+        </div >
         <h4 className="col-sm-3"> 
              <strong>{customer.firstName}</strong>
              <strong> {customer.lastName}</strong>

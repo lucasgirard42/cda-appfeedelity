@@ -51,10 +51,10 @@
 
     <a href="{{ path('customer_new') }}">Create new</a> #}
 
-{% for customer in customers %}
 
-<data-customers data-customer="{{customer.id }}" data-user="{{app.user ? app.user.id : 0 }}"></data-customers>
 
-{% endfor %}
+<data-customers  data-user="{{app.user ? app.user.id : 0 }}"></data-customers>
+
+
 
 {% endblock %}

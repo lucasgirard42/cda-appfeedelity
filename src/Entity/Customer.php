@@ -19,7 +19,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  *       
  *       normalizationContext={"groups"="customer"},
  *       denormalizationContext={"groups"="createCustomer","updateCustomer"},
- *       paginationItemsPerPage=2,
+ *      
  *       collectionOperations={
  *                              "GET", 
  *                              "POST"={
