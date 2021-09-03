@@ -6,6 +6,8 @@ import { Field } from '../components/Form';
 
 
 
+const VIEW = 'VIEW'
+const EDIT = 'EDIT'
 
 function Customers({user}){
 
@@ -19,24 +21,33 @@ function Customers({user}){
         setCustomers(customers => customers.filter(c => c != customer))
     }, [])
 
+    const UpdateCustomerFirstName = useCallback((newCustomerFirstName, oldCustomerFirstName) => {
+        
+        setCustomers(customers => customers.map(c => c == oldCustomerFirstName ? newCustomerFirstName : c))
+    }, [])
+
     useEffect(() => {
         load()
     }, [])
 
     return <div>
         {loading && 'chargement...'}   
-        {/* {JSON.stringify(customers)} */}
+        <Title count={count}/>
+        {/* <button onClick={load}>charger les customers</button> */}
+        {/* {hasMore && <button disabled={loading} className="btn btn-primary" onClick={load}> charger plus de clients </button>} */}
         {user && <CustomerForm user={user}  onCustomer={addCustomer}/>}
 
         {/*!!!!!! attention avec canEdit !!!!!!!!  canEdit={c.id == user }*/}
         {customers.map(c => 
 
-        <Customer key={c.id}  customer={c}  onDelete={deleteCustomer} />
+        <Customer 
+            key={c.id}  
+            customer={c}  
+            onDelete={deleteCustomer} 
+            onUpdate={UpdateCustomerFirstName}
+            />
         
         )} 
-        <Title count={count}/>
-        {/* <button onClick={load}>charger les customers</button> */}
-        {hasMore && <button disabled={loading} className="btn btn-primary" onClick={load}> charger plus de clients </button>}
     </div>
 }
 
@@ -46,49 +57,64 @@ function Title ({count}){
     return <h3>{count} Customer{count>1?'s':''}</h3>
 }
 
-const Customer = React.memo(({customer, onDelete }) => {
+const Customer = React.memo(({customer = null  , onDelete, onUpdate }) => {
 
+    // Hooks
+    const [state, setState] = useState(VIEW)
+    
+
+    // Events 
+    const toggleEdit = useCallback(() => {
+        setState(state => state == VIEW ? EDIT : VIEW)
+    }, [])
     const onDeleteCallback = useCallback (() => {
         onDelete(customer)
     }, [customer])
+    const onCustomer = useCallback((newCustomerFirstName) => {
+        onUpdate(newCustomerFirstName, customer )
+    }, [customer])
+
     const {loading: loadingDelete, load: callDelete} =  useFetch(customer['@id'], 'DELETE', onDeleteCallback )
 
+
+    // Rendu 
     console.log('render');
     return <div className="row data-customers">
-        <div className="col-sm-1">
-            <strong>{customer.id}</strong>
-        </div >
-        <h4 className="col-sm-3"> 
-             <strong>{customer.firstName}</strong>
-        </h4>
-        <div className="col-sm-1">
-            <p>{customer.fidelityPoint}</p>
-        </div>
-        <div className="col-sm-3">
-            <p>
+                <div className="col-sm-9"> 
+                <strong>{customer.id} </strong>
+            {state == VIEW ? 
+            
+            <strong>{customer.firstName}</strong> :
+            <CustomerForm customer={customer} onCustomer={onCustomer} />
+        }
+             <p>
                 <button className="btn btn-danger" onClick={callDelete.bind(this, null)} disabled={loadingDelete} >
                     delete
                 </button>
-            </p>
-        </div>
-        <div className="col-sm-3">
-            <p>
-                <button className="btn btn-secondary"  >
-                    EDIT
+                <button className="btn btn-secondary" onClick={toggleEdit}  >
+                   EDIT
                 </button>
             </p>
         </div>
     </div>
 })
 
-const CustomerForm = React.memo(({user, onCustomer}) => {
+const CustomerForm = React.memo(({user, onCustomer, customer = null}) => {
     
+    // Variables 
     const ref = useRef(null)
+
     const onSuccess = useCallback(customer => {
         onCustomer(customer)
         ref.current.value = ''
     }, [ref, onCustomer])
-    const {load, loading, errors, clearError}  = useFetch('/api/customers', 'POST', onSuccess)
+
+    // Hooks
+    const method = customer ? 'PUT' : 'POST'
+    const url = customer ? customer['@id'] : '/api/customers'
+    const {load, loading, errors, clearError}  = useFetch(url, method, onSuccess)
+
+    // Méthodes 
     const onSubmit = useCallback(e => {
         e.preventDefault()
         load({
@@ -97,31 +123,42 @@ const CustomerForm = React.memo(({user, onCustomer}) => {
         })
     }, [load, ref, user])
 
+    // Effets 
+    useEffect(() => {
+        if (customer && customer.firstName && ref.current){
+            ref.current.value = customer.firstName
+        }
+    }, [customer, ref]) 
+
+    
+    
+
     
 
     return (
-      <div className="well">
-        <form onSubmit={onSubmit}>
+      <div className="row" >
+        <form className ="col-sm-3" onSubmit={onSubmit}>
+            {customer == null && 
           <fieldset>
             <legend>
               <Icon icon="firsName" />
-              Ajout customer
+              Add customer
             </legend>
           </fieldset>
+          }
           <Field
             name="firstName"
-            help="client non conforme"
             ref={ref}
             error={errors["firstName"]}
             onChange={clearError.bind(this,'firstName')}
             required
             minLength={3}
           >
-            Votre clients
+            FirstName
           </Field>
           <div className="form-group">
             <button className="btn btn-primary" disabled={loading}>
-              <Icon icon="paper-plane" /> Envoyer
+               {customer == null ? 'Envoyer' :  'Edit' }
             </button>
           </div>
         </form>

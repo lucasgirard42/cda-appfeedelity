@@ -1,6 +1,6 @@
 import React from "react";
 
-export const Field = React.forwardRef(({help, name, children, error, onChange, required, minLength}, ref) => {
+export const Field = React.forwardRef(({ name, children, error, onChange, required, minLength}, ref) => {
 
   if (error) {
     help = error 
@@ -12,7 +12,6 @@ export const Field = React.forwardRef(({help, name, children, error, onChange, r
     <div className={className('form-group', error && 'has-error')}>
       <label htmlFor={name} className="control-label">{children}</label>
       <input ref={ref}  className="form-control" rows="10" name={name} id={name}  onChange={onChange} required={required} minLength={minLength}/>
-      {help &&  <div className="help-block">{help}</div>}
     </div>
   );
 });
